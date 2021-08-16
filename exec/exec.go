@@ -111,6 +111,20 @@ func StdOutputTimeout(c *exec.Cmd, timeout time.Duration) ([]byte, error) {
 	return b.Bytes(), err
 }
 
+// SeparatedOutputTimeout runs the given command with the given timeout and
+// returns the output of stdout and stderr separately.
+// If the command times out, it attempts to kill the process.
+func SeparatedOutputTimeout(c *exec.Cmd, timeout time.Duration) (stdout []byte, stderr []byte, err error) {
+	var o, e bytes.Buffer
+	c.Stdout = &o
+	c.Stderr = &e
+	if err := c.Start(); err != nil {
+		return nil, nil, err
+	}
+	err = WaitTimeout(c, timeout)
+	return o.Bytes(), e.Bytes(), err
+}
+
 // RunTimeout runs the given command with the given timeout.
 // If the command times out, it attempts to kill the process.
 func RunTimeout(c *exec.Cmd, timeout time.Duration) error {
