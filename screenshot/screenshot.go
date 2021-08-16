@@ -115,3 +115,11 @@ func showWidthHeight() chromedp.Action {
 		return nil
 	})
 }
+
+// elementScreenshot takes a screenshot of the first element node matching the selector.
+func elementScreenshot(urlstr, selector string, res *[]byte) chromedp.Tasks {
+	return chromedp.Tasks{
+		chromedp.Navigate(urlstr),
+		chromedp.Screenshot(selector, res, chromedp.NodeVisible),
+	}
+}
