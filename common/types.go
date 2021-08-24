@@ -1,5 +1,11 @@
 package common
 
+import (
+	"fmt"
+	"reflect"
+	"strings"
+)
+
 func IntPtr(v int) *int {
 	return &v
 }
@@ -100,4 +106,16 @@ func StringPtrs(vals []string) []*string {
 		ptrs[i] = &vals[i]
 	}
 	return ptrs
+}
+
+func IsMap(x interface{}) bool {
+	// t := fmt.Sprintf("%T", x)
+	// return strings.HasPrefix(t, "map[")
+
+	return reflect.ValueOf(x).Kind() == reflect.Map
+}
+
+func IsMapString(x interface{}) bool {
+	t := fmt.Sprintf("%T", x)
+	return strings.HasPrefix(t, "map[string]")
 }
