@@ -16,9 +16,15 @@ import (
 )
 
 const (
-	KeyFileSuffix  = ".key"
-	CertFileSuffix = ".crt"
-	PemFileSuffix  = ".pem"
+	KeyFileSuffix     = ".key" // PEM encoded (base64) private key file
+	CertFileSuffix    = ".crt" // PEM encoded (base64) x509 certificate
+	PemFileSuffix     = ".pem"
+	CertDERFileSuffix = ".cer" // DER encoded (binary) x509 certificate
+
+	JKSFileSuffix = ".jks"
+	P12FileSuffix = ".p12" // pkcs12
+
+	PKCS8KeyFileSuffix = ".pkcs8.key" // binary file, private key o pkcs8 format
 )
 
 func randomSerialNumber() (*big.Int, error) {
