@@ -21,6 +21,10 @@ func NewMap(m map[string]interface{}) *Map {
 	}
 }
 
+func (m *Map) Value() map[string]interface{} {
+	return m.items
+}
+
 type Option func(m *Map) *Map
 
 func WithOverride(m *Map) *Map {

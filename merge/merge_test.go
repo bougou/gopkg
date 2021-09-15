@@ -41,6 +41,10 @@ func Test_merge(t *testing.T) {
 		m.Merge(tt.src, WithOverride)
 		b, _ := common.Encode("json", tt.dst)
 		fmt.Println(string(b))
+
+		b1, _ := common.Encode("json", m.Value())
+		fmt.Println(string(b1))
+
 	}
 
 }
