@@ -56,3 +56,7 @@ func (d *Duration) UnmarshalTOML(b []byte) error {
 
 	return nil
 }
+
+func (d *Duration) UnmarshalText(text []byte) error {
+	return d.UnmarshalTOML(text)
+}
