@@ -1,10 +1,12 @@
 package common
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io"
 	"reflect"
+	"strings"
 )
 
 var timestampType = reflect.TypeOf(Timestamp{})
@@ -83,4 +85,15 @@ func stringifyValue(w io.Writer, val reflect.Value) {
 			fmt.Fprint(w, v.Interface())
 		}
 	}
+}
+
+// Str2Lines parses a multiline string into a slice of line item.
+func Str2Lines(multiline string) []string {
+	lines := []string{}
+	scanner := bufio.NewScanner(strings.NewReader(multiline))
+	scanner.Split(bufio.ScanLines) // optional, default scan behavior func is ScanLines
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	return lines
 }
