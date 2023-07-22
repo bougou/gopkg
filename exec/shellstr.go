@@ -10,13 +10,16 @@ func ShellStr2List(command string) []string {
 	command = strings.Replace(command, "\\\n", "", -1)
 	commandParts := strings.Split(command, " ")
 	reassembledCommandParts := []string{}
+
 	commandPartBuffer := ""
 	commandPartBufferQuoteChar := ""
 
 	// the following reconstructs some command line pieces for quoted args with spaces
 	// which is a case our simple command line part split doesn't handle above
 	// this is very imperfect, but will do for us here until it doesn't
+
 	partSearch, _ := regexp.Compile(`['"]`)
+
 	for _, commandPart := range commandParts {
 		matches := partSearch.FindAllStringIndex(commandPart, -1)
 		if len(matches) == 1 {

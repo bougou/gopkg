@@ -1,83 +1,93 @@
 package exec
 
 import (
-	"strings"
 	"testing"
 )
 
-func TestExec(t *testing.T) {
-	sh := ShellCommand{
-		command: "echo testing-output",
-	}
+func TestShellCommandExec(t *testing.T) {
+	cases := []struct {
+		name string
 
-	output, err := sh.Exec()
-	if err != nil {
-		t.Errorf("Command failed: %v", err)
-	}
-	if output != "testing-output" {
-		t.Errorf("want: 'testing-output', got: '%s'", output)
-	}
-}
-
-func TestExecTrimmedOutput(t *testing.T) {
-	sh := ShellCommand{
-		command:    "echo testing-output",
-		trimOutput: true,
-	}
-
-	output, err := sh.Exec()
-	if err != nil {
-		t.Errorf("Command failed: %v", err)
-	}
-	if output != "testing-output" {
-		t.Errorf("Expected output 'testing-output', but received '%s'", output)
-	}
-}
-
-func TestExecFailure(t *testing.T) {
-	sh := ShellCommand{
-		command: "command-that-does-not-exist",
-	}
-	_, err := sh.Exec()
-	if err == nil {
-		t.Error("Didn't receive expected failure from command")
-	}
-}
-
-func TestOutputLineSpliting(t *testing.T) {
-	sh := ShellCommand{
-		command:    `printf one\ntwo\nthree`,
-		silent:     true,
-		trimOutput: true,
-	}
-
-	output, err := sh.Exec()
-	if err != nil {
-		t.Errorf("Command failed: %v", err)
-	}
-	if len(strings.Fields(output)) != 3 {
-		t.Errorf("Expected split length of output, expected 3, but received %v", len(strings.Fields(output)))
-	}
-}
-
-func TestReassembleCommandParts(t *testing.T) {
-	shs := []ShellCommand{
+		command     string
+		silent      bool
+		trim        bool
+		expect      string
+		expectError bool
+		noexpect    bool
+	}{
 		{
-			command:    `grep -r 'some text with spaces' .`,
-			silent:     false,
-			trimOutput: false,
+			name:    "test1",
+			command: "echo testing-output",
+			trim:    false,
+			expect:  "testing-output\n",
 		},
 		{
-			command:    `grep -r "some text with spaces" .`,
-			silent:     false,
-			trimOutput: false,
+			name:    "test2",
+			command: "echo testing-output",
+			silent:  true,
+			trim:    true,
+			expect:  "testing-output",
+		},
+		{
+			name:        "test3",
+			command:     "command-that-does-not-exist",
+			expectError: true,
+		},
+		{
+			name:    "test4",
+			command: `printf one\ntwo\nthree`,
+			silent:  true,
+			trim:    true,
+			expect:  "one\ntwo\nthree",
+		},
+		{
+			name:     "test5",
+			command:  `grep -r 'some text with spaces' .`,
+			silent:   true,
+			trim:     false,
+			noexpect: true,
+		},
+		{
+			name:     "test6",
+			command:  `grep -r "some text with spaces" .`,
+			trim:     false,
+			noexpect: true,
 		},
 	}
 
-	for _, sh := range shs {
-		_, err := sh.Exec()
+	for _, tt := range cases {
+		sc := ShellCommand{
+			command: tt.command,
+			silent:  tt.silent,
+			trim:    tt.trim,
+		}
+
+		output, err := sc.Exec()
 		if err != nil {
-			t.Errorf("Command failed: %v", err)
+			if !tt.expectError {
+				t.Errorf("command error, not expect error")
+			}
+		}
+
+		if tt.noexpect {
+			continue
+		}
+
+		if !isByteSliceEqual(output, []byte(tt.expect)) {
+			t.Errorf("test case: %s failed, expect: '%s', got: '%s'", tt.name, tt.expect, output)
 		}
 	}
+
+}
+
+func isByteSliceEqual(a, b []byte) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := 0; i < len(a); i++ {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }

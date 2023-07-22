@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 type CmdEnvWrapper struct {
@@ -14,10 +15,12 @@ type CmdEnvWrapper struct {
 	debug bool
 }
 
+// each env string is of format "key=value"
 func NewCmdEnvWrapper(cmd *exec.Cmd, env ...string) *CmdEnvWrapper {
 	c := &CmdEnvWrapper{cmd, env, false}
 
-	// Must, if os.Environ is not assigned to cmd.Env, some important os native environment variables may be lost,
+	// Must, if os.Environ is not assigned to cmd.Env,
+	// some important os native environment variables may be lost,
 	// and thus influence the cmd's execute behaviour
 	c.Cmd.Env = os.Environ()
 	c.Cmd.Env = append(c.Cmd.Env, env...)
@@ -31,6 +34,14 @@ func (c *CmdEnvWrapper) Run() error {
 	}
 
 	return c.Cmd.Run()
+}
+
+func (c *CmdEnvWrapper) RunTimeOut(timeout time.Duration) error {
+	if c.debug {
+		fmt.Println("[Run]:", c.String())
+	}
+
+	return RunTimeout(c.Cmd, timeout)
 }
 
 func (c *CmdEnvWrapper) SetDebug(debug bool) {

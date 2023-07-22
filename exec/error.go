@@ -1,15 +1,12 @@
 package exec
 
 import (
-	"errors"
 	osexec "os/exec"
 	"syscall"
 )
 
 // ErrExecutableNotFound is returned if the executable is not found.
 var ErrExecutableNotFound = osexec.ErrNotFound
-
-var ErrTimeout = errors.New("command timed out")
 
 // ExitError is an interface that presents an API similar to os.ProcessState, which is
 // what ExitError from os/exec is. This is designed to make testing a bit easier and
