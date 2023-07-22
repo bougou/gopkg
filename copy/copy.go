@@ -14,15 +14,20 @@ import (
 
 // Whether the srcDir string ends with '/' determines the copy behaviour.
 // It des not matter whether the dstDir string ends with '/'.
+//
+// Both the srcDir and the dstDir must be absolute paths which starts with '/'.
+//
 // If the srcDir ends in a '/', the contents of the directory are copied rather than the directory itself.
-// eg 1:
-// srcDir: /path/to/src1/     {file1.txt,...}
-// dstDir: /path/to/dst1
-// result: /path/to/dst1/{file1.txt,...}
-// eg 2:
-// srcDir: /path/to/src1     {file1.txt,...}
-// dstDir: /path/to/dst1
-// result: /path/to/dst1/src1/{file1.txt,...}
+//
+//	eg 1:
+//	srcDir: /path/to/src1/     {file1.txt,...}
+//	dstDir: /path/to/dst1
+//	result: /path/to/dst1/{file1.txt,...}
+//
+//	eg 2:
+//	srcDir: /path/to/src1     {file1.txt,...}
+//	dstDir: /path/to/dst1
+//	result: /path/to/dst1/src1/{file1.txt,...}
 func CopyDir(srcDir string, dstDir string) error {
 	if !strings.HasPrefix(srcDir, "/") || !strings.HasPrefix(dstDir, "/") {
 		return fmt.Errorf("both srcDir and dstDir must be absolute dir path")
