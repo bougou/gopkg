@@ -1,7 +1,7 @@
-package internal
+package math
 
-// difference represents a - b
-func difference(a, b []string) []string {
+// Difference returns a - b
+func Difference(a, b []string) []string {
 	// map of b
 	mb := make(map[string]struct{}, len(b))
 	for _, x := range b {
@@ -16,7 +16,7 @@ func difference(a, b []string) []string {
 	return diff
 }
 
-func contains(args []string, element string) bool {
+func Contains(args []string, element string) bool {
 	for _, arg := range args {
 		if arg == element {
 			return true
