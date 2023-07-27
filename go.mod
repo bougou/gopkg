@@ -20,6 +20,8 @@ require (
 	gopkg.in/yaml.v3 v3.0.0
 )
 
+require golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
+
 require (
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
