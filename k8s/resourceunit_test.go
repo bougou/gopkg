@@ -1,4 +1,4 @@
-package unit
+package k8s
 
 import (
 	"testing"
@@ -24,7 +24,7 @@ func Test_ParseK8SResourceStrToFloat64(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := ParseK8SResourceStrToFloat64(tt.input)
+		got := ConvertResourceValueStringToFloat64(tt.input)
 		if got != tt.expect {
 			t.Errorf("not match, expect: %f， got: %f", tt.expect, got)
 		}
@@ -75,7 +75,7 @@ func TestParseK8SResourceFloat64ToStr(t *testing.T) {
 	}
 
 	for i, tt := range tests {
-		got := ParseK8SResourceFloat64ToStr(tt.input)
+		got := ConvertResourceValueFloat64ToString(tt.input)
 		if got != tt.expect {
 			t.Errorf("test %d failed, expect: %s， got: %s", i, tt.expect, got)
 		}
