@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func Test_ParseK8SResourceStrToFloat64(t *testing.T) {
+func Test_ConvertStrToFloat64(t *testing.T) {
 	tests := []struct {
 		input  string
 		expect float64
@@ -14,24 +14,28 @@ func Test_ParseK8SResourceStrToFloat64(t *testing.T) {
 			expect: 0.1,
 		},
 		{
-			input:  "1024Mi",
+			input:  "1024 Mi",
 			expect: 1073741824,
 		},
 		{
 			input:  "1.2K",
 			expect: 1200,
 		},
+		{
+			input:  "2.0Ti",
+			expect: 2 * 1024 * 1024 * 1024 * 1024,
+		},
 	}
 
 	for _, tt := range tests {
-		got := ParseK8SResourceStrToFloat64(tt.input)
+		got := ConvertStrToFloat64(tt.input)
 		if got != tt.expect {
 			t.Errorf("not match, expect: %f， got: %f", tt.expect, got)
 		}
 	}
 }
 
-func TestParseK8SResourceFloat64ToStr(t *testing.T) {
+func Test_ConvertFloat64ToStr(t *testing.T) {
 	tests := []struct {
 		input  float64
 		expect string
@@ -75,7 +79,7 @@ func TestParseK8SResourceFloat64ToStr(t *testing.T) {
 	}
 
 	for i, tt := range tests {
-		got := ParseK8SResourceFloat64ToStr(tt.input)
+		got := ConvertFloat64ToStr(tt.input)
 		if got != tt.expect {
 			t.Errorf("test %d failed, expect: %s， got: %s", i, tt.expect, got)
 		}

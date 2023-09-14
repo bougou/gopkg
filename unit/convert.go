@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	k8sMultiplier = map[string]float64{
+	unitMultiplier = map[string]float64{
 		"m":  0.001,
 		"":   math.Pow(1024, 0),
 		"K":  math.Pow(1000, 1),
@@ -23,42 +23,44 @@ var (
 		"Ti": math.Pow(1024, 4),
 		"P":  math.Pow(1000, 5),
 		"Pi": math.Pow(1024, 5),
+		"E":  math.Pow(1000, 6),
+		"Ei": math.Pow(1024, 6),
 	}
 
-	k8sRank = []string{"", "Ki", "Mi", "Gi", "Ti", "Pi"}
+	unitRank = []string{"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"}
 )
 
-const K8SResourcePattern = `^(?P<Number>[0-9.]+)(?P<Unit>m||[KMGTP]i?)$`
+const valuePattern = `^(?P<Number>[0-9.]+)\s*(?P<Unit>m||[KMGTP]i?)$`
 
-func ParseK8SResourceStrToFloat64(s string) float64 {
-	r := regexp.MustCompile(K8SResourcePattern)
+func ConvertStrToFloat64(s string) float64 {
+	r := regexp.MustCompile(valuePattern)
 
 	n := common.GetPatternCaptured(r, s, "Number")
 	u := common.GetPatternCaptured(r, s, "Unit")
 
 	f, _ := strconv.ParseFloat(n, 64)
 
-	multiplier, ok := k8sMultiplier[u]
+	multiplier, ok := unitMultiplier[u]
 	if !ok {
 		return f
 	}
 	return f * multiplier
 }
 
-// ParseK8SResourceFloat64ToStr stringiy float64 value to human friendly string
-func ParseK8SResourceFloat64ToStr(f float64) string {
+// ConvertFloat64ToStr stringiy float64 value to human friendly string
+func ConvertFloat64ToStr(f float64) string {
 	if f < 1 {
 		return fmt.Sprintf("%dm", int64(f*1000))
 	}
 
 	var i int
-	for i = range k8sRank {
+	for i = range unitRank {
 		if f < 1024 {
 			break
 		}
 		f = f / 1024
 	}
-	var preferedUnit string = k8sRank[i]
+	var preferedUnit string = unitRank[i]
 
 	var res int64
 
