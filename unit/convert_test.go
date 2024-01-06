@@ -18,6 +18,10 @@ func Test_ConvertStrToFloat64(t *testing.T) {
 			expect: 1073741824,
 		},
 		{
+			input:  "1,024 Mi",
+			expect: 1073741824,
+		},
+		{
 			input:  "1.2K",
 			expect: 1200,
 		},

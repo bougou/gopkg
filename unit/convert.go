@@ -5,6 +5,7 @@ import (
 	"math"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/bougou/gopkg/common"
 )
@@ -30,7 +31,7 @@ var (
 	unitRank = []string{"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"}
 )
 
-const valuePattern = `^(?P<Number>[0-9.]+)\s*(?P<Unit>m||[KMGTP]i?)$`
+const valuePattern = `^(?P<Number>[0-9.,]+)\s*(?P<Unit>m||[KMGTP]i?)$`
 
 func ConvertStrToFloat64(s string) float64 {
 	r := regexp.MustCompile(valuePattern)
@@ -38,6 +39,7 @@ func ConvertStrToFloat64(s string) float64 {
 	n := common.GetPatternCaptured(r, s, "Number")
 	u := common.GetPatternCaptured(r, s, "Unit")
 
+	n = strings.ReplaceAll(n, ",", "")
 	f, _ := strconv.ParseFloat(n, 64)
 
 	multiplier, ok := unitMultiplier[u]
