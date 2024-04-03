@@ -1,4 +1,4 @@
-package cert
+package certutil
 
 import (
 	"crypto/rsa"
@@ -43,51 +43,6 @@ func NewKeyCert(commonName string, options ...DNOption) *KeyCert {
 		option(kc)
 	}
 	return kc
-}
-
-// DNOption can set the Distinguished Name for cert
-type DNOption func(*KeyCert)
-
-func WithDNOptionCountry(country ...string) DNOption {
-	return func(kc *KeyCert) {
-		kc.cert.Subject.Country = country
-	}
-}
-
-func WithDNOptionProvince(province ...string) DNOption {
-	return func(kc *KeyCert) {
-		kc.cert.Subject.Province = province
-	}
-}
-
-func WithDNOptionLocality(locality ...string) DNOption {
-	return func(kc *KeyCert) {
-		kc.cert.Subject.Locality = locality
-	}
-}
-
-func WithDNOptionStreetAddress(streetAddress ...string) DNOption {
-	return func(kc *KeyCert) {
-		kc.cert.Subject.StreetAddress = streetAddress
-	}
-}
-
-func WithDNOptionPostalCode(postalCode ...string) DNOption {
-	return func(kc *KeyCert) {
-		kc.cert.Subject.PostalCode = postalCode
-	}
-}
-
-func WithDNOptionOrganization(organization ...string) DNOption {
-	return func(kc *KeyCert) {
-		kc.cert.Subject.Organization = organization
-	}
-}
-
-func WithDNOptionOrganizationalUnit(organizationalUnit ...string) DNOption {
-	return func(kc *KeyCert) {
-		kc.cert.Subject.OrganizationalUnit = organizationalUnit
-	}
 }
 
 func LoadKeyCertPEMFile(keyFile string, certFile string) (*KeyCert, error) {
