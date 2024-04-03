@@ -1,4 +1,4 @@
-package clock
+package timeutil
 
 const (
 	// RFC3339Milli follows RFC3339 format with milliseconds for precision.

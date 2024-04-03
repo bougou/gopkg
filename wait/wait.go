@@ -6,14 +6,16 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/bougou/gopkg/clock"
 	"github.com/bougou/gopkg/runtime"
+	"github.com/bougou/gopkg/timeutil"
 )
 
 // For any test of the style:
-//   ...
-//   <- time.After(timeout):
-//      t.Errorf("Timed out")
+//
+//	...
+//	<- time.After(timeout):
+//	   t.Errorf("Timed out")
+//
 // The value for timeout should effectively be "forever." Obviously we don't want our tests to truly lock up forever, but 30s
 // is long enough that it is effectively forever for the things that can slow down a run on a heavily contended machine
 // (GC, seeks, etc), but not so long as to make a developer ctrl-c a test run if they do happen to break that test.
@@ -59,6 +61,8 @@ func contextForChannel(parentCh <-chan struct{}) (context.Context, context.Cance
 //
 // This allows clients to avoid converging on periodic behavior. If maxFactor
 // is 0.0, a suggested default value will be chosen.
+//
+// Jitter 返回一个指定间隔范围内的间隔
 func Jitter(duration time.Duration, maxFactor float64) time.Duration {
 	if maxFactor <= 0.0 {
 		maxFactor = 1.0
@@ -123,7 +127,7 @@ func NonSlidingUntilWithContext(ctx context.Context, f func(context.Context), pe
 // Close stopCh to stop. f may not be invoked if stop channel is already
 // closed. Pass NeverStop to if you don't want it stop.
 func JitterUntil(f func(), period time.Duration, jitterFactor float64, sliding bool, stopCh <-chan struct{}) {
-	BackoffUntil(f, NewJitteredBackoffManager(period, jitterFactor, &clock.RealClock{}), sliding, stopCh)
+	BackoffUntil(f, NewJitteredBackoffManager(period, jitterFactor, &timeutil.RealClock{}), sliding, stopCh)
 }
 
 // BackoffUntil loops until stop channel is closed, run f every duration given by BackoffManager.
@@ -131,7 +135,7 @@ func JitterUntil(f func(), period time.Duration, jitterFactor float64, sliding b
 // If sliding is true, the period is computed after f runs. If it is false then
 // period includes the runtime for f.
 func BackoffUntil(f func(), backoff BackoffManager, sliding bool, stopCh <-chan struct{}) {
-	var t clock.Timer
+	var t timeutil.Timer
 	for {
 		select {
 		case <-stopCh:

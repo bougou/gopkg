@@ -1,24 +1,34 @@
-package clock
+package timeutil
 
 import "time"
 
 // IntervalClock implements Clock, but each invocation of Now steps the clock forward the specified duration
 // 间隔式时钟，（有一个起始时刻和一个间隔时段）
-// 每次调用 Now 时，返回的时间是：上次记录的时刻 + 间隔时段
+// 每次调用 Now，返回的时间是：上次记录的时刻 + 间隔时段；这个返回的时间会被记录下来。
 type IntervalClock struct {
-	Time     time.Time
-	Duration time.Duration
+	timee    time.Time
+	duration time.Duration
+}
+
+// IntervalClock implements Clock interface
+var _ Clock = (*IntervalClock)(nil)
+
+func NewIntervalClock(timee time.Time, duration time.Duration) IntervalClock {
+	return IntervalClock{
+		timee:    timee,
+		duration: duration,
+	}
 }
 
 // Now returns i's time
 func (i *IntervalClock) Now() time.Time {
-	i.Time = i.Time.Add(i.Duration)
-	return i.Time
+	i.timee = i.timee.Add(i.duration)
+	return i.timee
 }
 
 // Since returns time since the time in i.
 func (i *IntervalClock) Since(ts time.Time) time.Duration {
-	return i.Time.Sub(ts)
+	return i.timee.Sub(ts)
 }
 
 // After is currently unimplemented, will panic.
