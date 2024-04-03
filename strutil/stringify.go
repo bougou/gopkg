@@ -1,4 +1,4 @@
-package common
+package strutil
 
 import (
 	"bytes"
@@ -6,8 +6,6 @@ import (
 	"io"
 	"reflect"
 )
-
-var timestampType = reflect.TypeOf(Timestamp{})
 
 // Stringify creates a reasonable string representation of types
 // It resolves pointers to their values and omits struct fields with nil values.
@@ -49,10 +47,10 @@ func stringifyValue(w io.Writer, val reflect.Value) {
 			w.Write([]byte(v.Type().String()))
 		}
 
-		if v.Type() == timestampType {
-			fmt.Fprintf(w, "{%s}", v.Interface())
-			return
-		}
+		// if v.Type() == timestampType {
+		// 	fmt.Fprintf(w, "{%s}", v.Interface())
+		// 	return
+		// }
 
 		w.Write([]byte{'{'})
 
