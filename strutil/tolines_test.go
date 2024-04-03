@@ -1,8 +1,8 @@
-package common
+package strutil
 
 import "testing"
 
-func Test_Str2Lines(t *testing.T) {
+func Test_ToLines(t *testing.T) {
 	tests := []struct {
 		name      string
 		multiline string
@@ -35,7 +35,7 @@ c
 	}
 
 	for _, tt := range tests {
-		got := Str2Lines(tt.multiline)
+		got := ToLines(tt.multiline)
 		want := tt.out
 		if len(got) != len(want) {
 			t.Errorf("case %s: lines number not matched, got: %v, expected: %v", tt.name, got, want)
