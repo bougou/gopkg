@@ -2,7 +2,6 @@ package copy
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -67,11 +66,11 @@ func CopyDir(srcDir string, dstDir string) error {
 			}
 
 		case mode.IsRegular():
-			input, err := ioutil.ReadFile(srcPath)
+			input, err := os.ReadFile(srcPath)
 			if err != nil {
 				return err
 			}
-			err = ioutil.WriteFile(dstPath, input, f.Mode())
+			err = os.WriteFile(dstPath, input, f.Mode())
 			if err != nil {
 				return err
 			}
@@ -115,12 +114,12 @@ func CopyFile(srcFile, dstFile string) error {
 		return err
 	}
 
-	input, err := ioutil.ReadFile(srcFile)
+	input, err := os.ReadFile(srcFile)
 	if err != nil {
 		return err
 	}
 
-	err = ioutil.WriteFile(dstFile, input, f.Mode())
+	err = os.WriteFile(dstFile, input, f.Mode())
 	if err != nil {
 		return err
 	}
