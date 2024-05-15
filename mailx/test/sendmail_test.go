@@ -64,7 +64,7 @@ func TestSendHTMLNative(t *testing.T) {
 	subject := "Hello world 🚨🔥✅❗"
 
 	for _, f := range froms {
-		from := mail.Address{
+		from := &mail.Address{
 			Name:    "发报局",
 			Address: f.user,
 		}
@@ -73,6 +73,8 @@ func TestSendHTMLNative(t *testing.T) {
 
 		sm.WithAuth(true, f.user, f.pass).
 			WithFrom(from).
+			WithSender(from).
+			WithReplyTo(from).
 			WithTo(to).
 			WithCc(cc).
 			WithBcc(bcc).

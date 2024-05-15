@@ -38,10 +38,25 @@ func (s *SendMail) BuildMessageMIME() (string, error) {
 // builderHeader constructs the header part of a mail message.
 func (s *SendMail) buildHeader() string {
 	buf := bytes.NewBuffer(nil)
-	buf.WriteString(fmt.Sprintf("%s: %s\r\n", "From", s.FromDisplayName()))
-	buf.WriteString(fmt.Sprintf("%s: %s\r\n", "To", s.ToDisplayName()))
-	buf.WriteString(fmt.Sprintf("%s: %s\r\n", "Cc", s.CcDisplayName()))
-	buf.WriteString(fmt.Sprintf("%s: %s\r\n", "Subject", s.SubjectEncoded()))
+	if s.from != nil {
+		buf.WriteString(fmt.Sprintf("%s: %s\r\n", "From", s.FromDisplayName()))
+	}
+	if s.sender != nil {
+		buf.WriteString(fmt.Sprintf("%s: %s\r\n", "Sender", s.SenderDisplayName()))
+	}
+	if s.replyTo != nil {
+		buf.WriteString(fmt.Sprintf("%s: %s\r\n", "Reply-To", s.ReplyToDisplayName()))
+	}
+
+	if len(s.to) != 0 {
+		buf.WriteString(fmt.Sprintf("%s: %s\r\n", "To", s.ToDisplayName()))
+	}
+	if len(s.cc) != 0 {
+		buf.WriteString(fmt.Sprintf("%s: %s\r\n", "Cc", s.CcDisplayName()))
+	}
+	if len(s.bcc) != 0 {
+		buf.WriteString(fmt.Sprintf("%s: %s\r\n", "Subject", s.SubjectEncoded()))
+	}
 	return buf.String()
 }
 

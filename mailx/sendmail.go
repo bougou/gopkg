@@ -28,7 +28,13 @@ type SendMail struct {
 	// the valid from format is:
 	//  "some@domain.com"
 	//  "Display Name <some@domain.com>"
-	from mail.Address
+	from *mail.Address
+	// 发送者，区别于 from 发送人
+	// eg: 一个「秘书」替「老板」向别人发送邮件，from=老板，sener=秘书
+	// 如果 from=sender, sender 通常忽略掉
+	sender  *mail.Address
+	replyTo *mail.Address
+
 	// 收件人 The identity of the primary recipients of the message.
 	to []mail.Address
 	// 抄送 The identity of the secondary (informational) recipients of the message.
@@ -60,6 +66,10 @@ func NewSendMail(smtpServerAddr string, ssl bool) *SendMail {
 		addr:        smtpServerAddr,
 		ssl:         ssl,
 		attachments: make([]Attachment, 0),
+
+		to:  make([]mail.Address, 0),
+		cc:  make([]mail.Address, 0),
+		bcc: make([]mail.Address, 0),
 	}
 }
 
@@ -76,7 +86,7 @@ func (s *SendMail) WithDebug(debug bool) *SendMail {
 	return s
 }
 
-func (s *SendMail) WithFrom(from mail.Address) *SendMail {
+func (s *SendMail) WithFrom(from *mail.Address) *SendMail {
 	s.from = from
 	return s
 }
@@ -86,13 +96,38 @@ func (s *SendMail) WithTo(to []mail.Address) *SendMail {
 	return s
 }
 
+func (s *SendMail) WithToAppend(to ...mail.Address) *SendMail {
+	s.to = append(s.to, to...)
+	return s
+}
+
 func (s *SendMail) WithCc(cc []mail.Address) *SendMail {
 	s.cc = cc
 	return s
 }
 
+func (s *SendMail) WithCcAppend(cc ...mail.Address) *SendMail {
+	s.cc = append(s.cc, cc...)
+	return s
+}
+
 func (s *SendMail) WithBcc(bcc []mail.Address) *SendMail {
 	s.bcc = bcc
+	return s
+}
+
+func (s *SendMail) WithBccAppend(bcc ...mail.Address) *SendMail {
+	s.bcc = append(s.bcc, bcc...)
+	return s
+}
+
+func (s *SendMail) WithSender(sender *mail.Address) *SendMail {
+	s.sender = sender
+	return s
+}
+
+func (s *SendMail) WithReplyTo(replyTo *mail.Address) *SendMail {
+	s.replyTo = replyTo
 	return s
 }
 
@@ -138,6 +173,14 @@ func (s *SendMail) Recipients() []mail.Address {
 
 func (s *SendMail) FromDisplayName() string {
 	return s.from.String()
+}
+
+func (s *SendMail) SenderDisplayName() string {
+	return s.sender.String()
+}
+
+func (s *SendMail) ReplyToDisplayName() string {
+	return s.replyTo.String()
 }
 
 func (s *SendMail) ToDisplayName() string {
