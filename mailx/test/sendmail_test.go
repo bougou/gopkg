@@ -71,14 +71,20 @@ func TestSendHTMLNative(t *testing.T) {
 
 		sm := mailx.NewSendMail(fmt.Sprintf("%s:%d", f.addr, 25), false)
 
-		sm.WithAuth(true, f.user, f.pass).WithFrom(from).WithTo(to).WithCc(cc).WithBcc(bcc).WithSubject(subject).WithContent(contentPlain, contentHTML).WithDebug(true)
+		sm.WithAuth(true, f.user, f.pass).
+			WithFrom(from).
+			WithTo(to).
+			WithCc(cc).
+			WithBcc(bcc).
+			WithSubject(subject).
+			WithContent(contentPlain, contentHTML).
+			WithDebug(true)
 
-		if err := sm.AddAttachments("/Users/bougou/Downloads/1.cfg", "/Users/bougou/Downloads/2.png"); err != nil {
-			t.Errorf("ad attachments failed, err: %s", err)
+		if err := sm.AddAttachments("1.cfg", "2.png"); err != nil {
+			t.Errorf("add attachments failed, err: %s", err)
 		}
 
-		err := sm.Send()
-		if err != nil {
+		if err := sm.Send(); err != nil {
 			t.Error(err)
 		}
 

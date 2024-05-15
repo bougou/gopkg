@@ -3,7 +3,6 @@ package snippet
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -41,7 +40,7 @@ func openXlsx(filename string) (*xlsx.File, error) {
 }
 
 func openXlsx2(filename string) (*xlsx.File, error) {
-	fileBytes, err := ioutil.ReadFile(filename)
+	fileBytes, err := os.ReadFile(filename)
 	if err != nil {
 		fmt.Println(err)
 		panic(err)

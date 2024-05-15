@@ -3,7 +3,7 @@ package timeutil
 import "time"
 
 // Ticker interface 报时器
-// 1. 周期性发送时间；
+// 1. 周期性发送时间
 // 2. 不会超时，除非主动停止
 type Ticker interface {
 	C() <-chan time.Time

@@ -3,8 +3,8 @@ package mailx
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
 	"net/mail"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -20,13 +20,14 @@ type SendMail struct {
 	debug bool
 
 	// 发件人
-	// 发件人：腾讯视频 <film@tencent.com>
-	// 发件人：RedHat <email@redhat.com>
-	// 发件人：Google <no-reply@accounts.google.com>
+	//  发件人：腾讯视频 <film@tencent.com>
+	//  发件人：RedHat <email@redhat.com>
+	//  发件人：Google <no-reply@accounts.google.com>
 	// see: https://askleo.com/why_are_email_addresses_sometimes_in_anglebrackets/
+	//
 	// the valid from format is:
-	// "some@domain.com"
-	// "Display Name <some@domain.com>"
+	//  "some@domain.com"
+	//  "Display Name <some@domain.com>"
 	from mail.Address
 	// 收件人 The identity of the primary recipients of the message.
 	to []mail.Address
@@ -112,7 +113,7 @@ func (s *SendMail) WithContent(plainContent string, htmlContent string) *SendMai
 func (s *SendMail) AddAttachments(files ...string) error {
 	fmt.Println("Add att", files)
 	for _, file := range files {
-		b, err := ioutil.ReadFile(file)
+		b, err := os.ReadFile(file)
 		if err != nil {
 			return fmt.Errorf("read file from (%s) failed, err: %s", file, err)
 		}

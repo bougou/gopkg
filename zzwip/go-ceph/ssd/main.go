@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -27,7 +27,7 @@ func inSSDs(osdID int) bool {
 
 func main() {
 
-	pgdumpJson, err := ioutil.ReadFile("pgdump.json")
+	pgdumpJson, err := os.ReadFile("pgdump.json")
 	if err != nil {
 		panic(err)
 	}

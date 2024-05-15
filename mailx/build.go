@@ -9,6 +9,7 @@ import (
 	"net/textproto"
 )
 
+// BuildMessageMIME constructs the whole data of a mail message.
 func (s *SendMail) BuildMessageMIME() (string, error) {
 	buf := bytes.NewBuffer(nil)
 
@@ -23,7 +24,7 @@ func (s *SendMail) BuildMessageMIME() (string, error) {
 		}
 		buf.WriteString(text)
 	} else {
-		// Text + Attachements
+		// Text(plain/html) + Attachements
 		mixed, err := s.buildMixed()
 		if err != nil {
 			return "", fmt.Errorf("buildMixed failed, err: %s", err)
@@ -34,6 +35,7 @@ func (s *SendMail) BuildMessageMIME() (string, error) {
 	return buf.String(), nil
 }
 
+// builderHeader constructs the header part of a mail message.
 func (s *SendMail) buildHeader() string {
 	buf := bytes.NewBuffer(nil)
 	buf.WriteString(fmt.Sprintf("%s: %s\r\n", "From", s.FromDisplayName()))
@@ -43,6 +45,10 @@ func (s *SendMail) buildHeader() string {
 	return buf.String()
 }
 
+// buildText constructs the mail content.（邮件正文）
+//
+// You should use `buildText` when there's no attachement in the mail,
+// and use `buildMixed` when there are attachements in the mail.
 func (s *SendMail) buildText() (string, error) {
 	buf := bytes.NewBuffer(nil)
 
@@ -67,7 +73,8 @@ func (s *SendMail) buildText() (string, error) {
 	return buf.String(), nil
 }
 
-// 邮件正文可以同时提供 HTML 形式和纯文本形式，相同内容使用不同形式表示。
+// 邮件正文可以同时提供 HTML 形式和纯文本形式。
+// 收件方可以根据设备的能力支持选择其中一种进行展示。
 func (s *SendMail) buildAlternative() (string, error) {
 	buf := bytes.NewBuffer(nil)
 	writer := multipart.NewWriter(buf)
@@ -100,6 +107,7 @@ func (s *SendMail) buildAlternative() (string, error) {
 	return buf.String(), nil
 }
 
+// buildMixed constructs the content containing the mail text and mail attachements.
 func (s *SendMail) buildMixed() (string, error) {
 	buf := bytes.NewBuffer(nil)
 
@@ -124,7 +132,7 @@ func (s *SendMail) buildMixed() (string, error) {
 		header.Add("Content-Disposition", fmt.Sprintf("attachment; filename=%s", v.Name))
 		attachPart, err := writer.CreatePart(header)
 		if err != nil {
-			return "", fmt.Errorf("create a1 part failed, err: %s", err)
+			return "", fmt.Errorf("create attach part failed, err: %s", err)
 		}
 
 		b := make([]byte, base64.StdEncoding.EncodedLen(len(v.Content)))

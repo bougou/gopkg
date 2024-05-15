@@ -3,8 +3,8 @@ package certutil
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"io/ioutil"
 	"net/http"
+	"os"
 )
 
 func NewTLSConfigFromBytes(caBytes, certBytes, keyBytes []byte) (*tls.Config, error) {
@@ -25,17 +25,17 @@ func NewTLSConfigFromBytes(caBytes, certBytes, keyBytes []byte) (*tls.Config, er
 }
 
 func NewTLSConfigFromFile(caFile, certFile, keyFile string) (*tls.Config, error) {
-	caBytes, err := ioutil.ReadFile(caFile)
+	caBytes, err := os.ReadFile(caFile)
 	if err != nil {
 		return nil, err
 	}
 
-	certBytes, err := ioutil.ReadFile(certFile)
+	certBytes, err := os.ReadFile(certFile)
 	if err != nil {
 		return nil, err
 	}
 
-	keyBytes, err := ioutil.ReadFile(keyFile)
+	keyBytes, err := os.ReadFile(keyFile)
 	if err != nil {
 		return nil, err
 	}
