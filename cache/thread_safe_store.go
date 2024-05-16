@@ -13,7 +13,6 @@ type ThreadSafeStore interface {
 	ListKeys() []string
 }
 
-// NewThreadSafeStore creates a new instance of ThreadSafeStore.
 func NewThreadSafeStore() ThreadSafeStore {
 	return &threadSafeMap{
 		items: map[string]interface{}{},
@@ -42,9 +41,7 @@ func (c *threadSafeMap) Update(key string, obj interface{}) {
 func (c *threadSafeMap) Delete(key string) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
-	if _, exists := c.items[key]; exists {
-		delete(c.items, key)
-	}
+	delete(c.items, key)
 }
 
 func (c *threadSafeMap) Get(key string) (item interface{}, exists bool) {
