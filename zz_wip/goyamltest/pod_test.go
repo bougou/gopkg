@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	goccyyaml "github.com/goccy/go-yaml"
+	"github.com/stretchr/testify/assert"
 	yamlv2 "gopkg.in/yaml.v2"
 	yamlv3 "gopkg.in/yaml.v3"
 	k8syaml "sigs.k8s.io/yaml"
@@ -77,46 +78,7 @@ spec:
 
 }
 
-func TestYamlToUnstructured(t *testing.T) {
-	jsonStr := `{
-  "apiVersion": "v1",
-  "kind": "Service",
-  "metadata": {
-    "name": "test-svc"
-  },
-  "spec": {
-    "ports": [
-      {
-        "port": 8080,
-        "protocol": "UDP"
-      }
-    ]
-  }
-}`
-
-	u := &unstructured.Unstructured{Object: map[string]interface{}{}}
-	if err := k8syaml.Unmarshal([]byte(jsonStr), &u); err != nil {
-		t.Error(err)
-	}
-	fmt.Println(u.Object["spec"].(map[string]interface{})["ports"].([]interface{})[0].(map[string]interface{})["port"].(int64))
-
-	if err := k8syaml.Unmarshal([]byte(jsonStr), &u.Object); err != nil {
-		t.Error(err)
-	}
-	fmt.Println(u.Object["spec"].(map[string]interface{})["ports"].([]interface{})[0].(map[string]interface{})["port"].(float64))
-
-	if err := json.Unmarshal([]byte(jsonStr), &u); err != nil {
-		t.Error(err)
-	}
-	fmt.Println(u.Object["spec"].(map[string]interface{})["ports"].([]interface{})[0].(map[string]interface{})["port"].(int64))
-
-	if err := json.Unmarshal([]byte(jsonStr), &u.Object); err != nil {
-		t.Error(err)
-	}
-	fmt.Println(u.Object["spec"].(map[string]interface{})["ports"].([]interface{})[0].(map[string]interface{})["port"].(float64))
-}
-
-func TestYamlToUnstructuredFloat64(t *testing.T) {
+func TestYamlToUnstructured_Float64PortNumber(t *testing.T) {
 	jsonStr := `{
   "apiVersion": "v1",
   "kind": "Service",
@@ -133,25 +95,85 @@ func TestYamlToUnstructuredFloat64(t *testing.T) {
   }
 }`
 
+	var getPort = func(u *unstructured.Unstructured) interface{} {
+		return u.Object["spec"].(map[string]interface{})["ports"].([]interface{})[0].(map[string]interface{})["port"]
+	}
+
 	u := &unstructured.Unstructured{Object: map[string]interface{}{}}
+
+	// Method 1
+	// Summary, to unmarshal k8s `json or yaml string` to Unstructured, please unmarshal to Unstructured, not Unstructured.Object.
 	if err := k8syaml.Unmarshal([]byte(jsonStr), &u); err != nil {
-		t.Error(err)
+		t.Errorf("method 1 err: %s", err)
 	}
-	fmt.Println(u.Object["spec"].(map[string]interface{})["ports"].([]interface{})[0].(map[string]interface{})["port"].(int64))
-	// Summary, to unmarshal k8s `json or yaml string` to Unstructured, unmarshal to Unstructured, not Unstructured.Object.
+	assert.Equal(t, int64(8080), getPort(u).(int64), "method 1 not equal")
 
+	// Method 2
 	if err := k8syaml.Unmarshal([]byte(jsonStr), &u.Object); err != nil {
-		t.Error(err)
+		t.Errorf("method 2 err: %s", err)
 	}
-	fmt.Println(u.Object["spec"].(map[string]interface{})["ports"].([]interface{})[0].(map[string]interface{})["port"].(float64))
+	assert.Equal(t, float64(8080), getPort(u).(float64), "method 2 not equal")
 
+	// Method 3
 	if err := json.Unmarshal([]byte(jsonStr), &u); err != nil {
-		t.Error(err)
+		t.Errorf("method 3 err: %s", err)
 	}
-	fmt.Println(u.Object["spec"].(map[string]interface{})["ports"].([]interface{})[0].(map[string]interface{})["port"].(float64))
+	assert.Equal(t, float64(8080), getPort(u).(float64), "method 3 not equal")
 
+	// Method 4
 	if err := json.Unmarshal([]byte(jsonStr), &u.Object); err != nil {
-		t.Error(err)
+		t.Errorf("method 4 err: %s", err)
 	}
-	fmt.Println(u.Object["spec"].(map[string]interface{})["ports"].([]interface{})[0].(map[string]interface{})["port"].(float64))
+	assert.Equal(t, float64(8080), getPort(u).(float64), "method 4 not equal")
+
+}
+
+func TestYamlToUnstructured_IntergerPortNumber(t *testing.T) {
+	jsonStr := `{
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "name": "test-svc"
+  },
+  "spec": {
+    "ports": [
+      {
+        "port": 8080,
+        "protocol": "UDP"
+      }
+    ]
+  }
+}`
+
+	var getPort = func(u *unstructured.Unstructured) interface{} {
+		return u.Object["spec"].(map[string]interface{})["ports"].([]interface{})[0].(map[string]interface{})["port"]
+	}
+
+	u := &unstructured.Unstructured{Object: map[string]interface{}{}}
+
+	// Method 1
+	// Summary, to unmarshal k8s `json or yaml string` to Unstructured, please unmarshal to Unstructured, not Unstructured.Object.
+	if err := k8syaml.Unmarshal([]byte(jsonStr), &u); err != nil {
+		t.Errorf("method 1 err: %s", err)
+	}
+	assert.Equal(t, int64(8080), getPort(u).(int64), "method 1 not equal")
+
+	// Method 2
+	if err := k8syaml.Unmarshal([]byte(jsonStr), &u.Object); err != nil {
+		t.Errorf("method 2 err: %s", err)
+	}
+	assert.Equal(t, float64(8080), getPort(u).(float64), "method 2 not equal")
+
+	// Method 3
+	if err := json.Unmarshal([]byte(jsonStr), &u); err != nil {
+		t.Errorf("method 3 err: %s", err)
+	}
+	assert.Equal(t, int64(8080), getPort(u).(int64), "method 3 not equal")
+
+	// Method 4
+	if err := json.Unmarshal([]byte(jsonStr), &u.Object); err != nil {
+		t.Errorf("method 4 err: %s", err)
+	}
+	assert.Equal(t, float64(8080), getPort(u).(float64), "method 4 not equal")
+
 }
