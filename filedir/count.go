@@ -25,8 +25,7 @@ func CountItemsOfDirRecusively(dirPath string) (int, error) {
 
 	err := filepath.Walk(dirPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			fmt.Printf("Error accessing path %q: %v\n", path, err)
-			return nil
+			return err
 		}
 
 		// Increment the count for each item
